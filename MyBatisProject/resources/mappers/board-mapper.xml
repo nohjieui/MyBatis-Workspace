@@ -9,23 +9,109 @@
 	select id값이 selectListCount, selectList 태그 2개 만들기
  -->
 <resultMap type="board" id="boardResultSet">
-	<result column="BOARD_NO" property="boardNo" />
+	<id column="BOARD_NO" property="boardNo" />
 	<result column="BOARD_TITLE" property="boardTitle" />
 	<result column="BOARD_CONTENT" property="boardContent" />
-	<result column="BOARD_WRITER" property="boardWriter" />
+	<result column="USER_NAME" property="boardWriter" />
 	<result column="COUNT" property="count" />
-	<result column="CREATE_DATE" property="createDate" />
-	<result column="STATUS" property="status" />
+	<result column="BOARD_DATE" property="createDate" />
+	<collection property="replyList" resultMap="replyResultSet" />
 </resultMap>
 
-<select id="selectListCount" parameterType="board" resultMap="boardResultSet">
+<resultMap type="reply" id="replyResultSet">
+	<result column="REPLY_NO" property="replyNo" />
+	<result column="USER_NAME" property="replyWriter" />
+	<result column="REPLY_CONTENT" property="replyContent" />
+	<result column="CREATE_DATE" property="createDate" />
+</resultMap>
+
+<select id="selectListCount" resultType="int">
 	SELECT COUNT(*) AS COUNT
 	  FROM BOARD
+	 WHERE STATUS = 'Y'
 </select>
 
-<select id="selectList" parameterType="board" resultMap="boardResultSet">
+<select id="selectList" resultMap="boardResultSet">
 	SELECT *
-	  FROM BOARD
-	 WHERE STATUS = 'Y'
+	  FROM BOARD B
+	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+	 WHERE B.STATUS = 'Y'
+	 ORDER BY BOARD_NO DESC
+</select>
+
+<update id="increaseCount" parameterType="_int">
+	UPDATE BOARD
+	   SET COUNT = COUNT + 1
+	 WHERE BOARD_NO = #{boardNo}
+	   AND STATUS = 'Y'
+</update>
+
+<select id="selectBoard" resultMap="boardResultSet" parameterType="_int">
+	SELECT BOARD_NO,
+		   BOARD_TITLE,
+		   USER_NAME,
+		   COUNT,
+		   B.CREATE_DATE AS BOARD_DATE,
+		   BOARD_CONTENT,
+		   R.*
+	  FROM BOARD B
+  	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+  	  LEFT JOIN REPLY R ON (BOARD_NO = REF_BNO)
+	 WHERE BOARD_NO = #{boardNo}
+	   AND B.STATUS = 'Y'
+	 ORDER BY R.CREATE_DATE DESC
+</select>
+
+<select id="selectReplyList" resultMap="replyResultSet" parameterType="_int">
+	SELECT REPLY_NO,
+		   USER_NAME,
+		   REPLY_CONTENT,
+		   CREATE_DATE
+	  FROM REPLY R
+	  JOIN MEMBER ON (REPLY_WRITER = USER_NO)
+	 WHERE R.REF_BNO = #{boardNo}
+	   AND R.STATUS = 'Y'
+	 ORDER BY CREATE_DATE DESC
+</select>
+
+<select id="selectSearchCount" parameterType="hashmap" resultType="int">
+	SELECT COUNT(*) AS COUNT
+	  FROM BOARD B
+	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+	 WHERE B.STATUS = 'Y' AND
+	 <if test="condition == 'writer'">
+	 	USER_NAME
+	 </if>
+	 <if test="condition == 'title'">
+	 	BOARD_TITLE
+	 </if>
+	 <if test="condition == 'content'">
+	 	BOARD_CONTENT
+	 </if>
+	LIKE '%' || #{keyword} || '%'
+</select>
+
+<select id="selectSearchList" parameterType="hashmap" resultMap="boardResultSet">
+	SELECT BOARD_NO,
+		   BOARD_TITLE,
+		   USER_NAME,
+		   COUNT,
+		   CREATE_DATE
+	  FROM BOARD B
+	  JOIN MEMBER ON (BOARD_WRITER = USER_NO)
+	 WHERE B.STATUS = 'Y'
+	 <choose>
+	 	<when test="condition == 'writer'">
+	 		AND USER_NAME
+	 	</when>
+	 	<when test="condition == 'title'">
+	 		AND BOARD_TITLE
+	 	</when>
+	 	<otherwise>
+	 		AND BOARD_CONTENT
+	 	</otherwise>
+	 </choose>
+	 LIKE CONCAT(CONCAT('%',#{keyword}),'%')
+	 ORDER BY BOARD_NO DESC
 </select>
 </mapper>

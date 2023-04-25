@@ -3,12 +3,12 @@ package com.kh.mybatis.board.model.vo;
 import java.sql.Date;
 
 public class Reply {
-	private int replyNo;//	REPLY_NO
-	private String replyContent;//	REPLY_CONTENT
-	private int refBno;//	REF_BNO
-	private String replyWriter;//	REPLY_WRITER
-	private Date createDate;//	CREATE_DATE
-	private String status;//	STATUS
+	private int replyNo;			//	REPLY_NO
+	private String replyContent;	//	REPLY_CONTENT
+	private int refBno;				//	REF_BNO
+	private String replyWriter;		//	REPLY_WRITER
+	private Date createDate;		//	CREATE_DATE
+	private String status;			//	STATUS
 	
 	public Reply() {
 		super();

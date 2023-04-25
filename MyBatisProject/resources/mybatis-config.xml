@@ -19,7 +19,7 @@
 	<typeAliases>
 		<typeAlias type="com.kh.mybatis.member.model.vo.Member" alias="member"/>
 		<typeAlias type="com.kh.mybatis.board.model.vo.Board" alias="board"/>
-		<typeAlias type="com.kh.mybatis.board.model.vo.Reply" alias="reply "/>
+		<typeAlias type="com.kh.mybatis.board.model.vo.Reply" alias="reply"/>
 	</typeAliases>
 
 	<!-- environments : mybais에서 연동할 DB정보들을 등록하는 영역(여러개 DB정보 등록 가능)
