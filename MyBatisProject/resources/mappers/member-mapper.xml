@@ -23,6 +23,7 @@
 			<result column="조회결과를 뽑고자 하는 DB컬럼명" property="해당 결과를 담고자하는 필드명"/>
 	  		<result column="조회결과를 뽑고자 하는 DB컬럼명" property="해당 결과를 담고자하는 필드명"/>
 	  		<result column="조회결과를 뽑고자 하는 DB컬럼명" property="해당 결과를 담고자하는 필드명"/>
+	  		...
 	  </resultMap>
 	  
 	  * DML 문일 경우
